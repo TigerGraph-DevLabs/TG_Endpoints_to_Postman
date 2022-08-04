@@ -1,0 +1,5 @@
+URL = ""
+USERNAME = ""
+PASSWORD = ""
+GRAPHNAME = ""
+OUTPUT_FILE = ""
