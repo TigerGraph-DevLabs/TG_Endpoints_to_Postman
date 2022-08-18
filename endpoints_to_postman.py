@@ -15,6 +15,12 @@ gui_port = ["/api/ping", "/ts3/api/datapoints", "/informant/current-service-stat
 conn = tg.TigerGraphConnection(host=cred.URL, username=cred.USERNAME, password=cred.PASSWORD, graphname=cred.GRAPHNAME)
 conn.apiToken = conn.getToken(conn.createSecret())
 
+### Update based on version
+ver = conn.getVer().split(".")
+EXTRA_ENDPOINT = ""
+if int(ver[0]) > 3 or (int(ver[0]) == 3 and int(ver[1]) > 6) or (int(ver[0]) == 3 and int(ver[1]) == 6 and int(ver[2]) > 0):
+    EXTRA_ENDPOINT = "/restpp"
+
 ### Get Endpoints
 enp = conn.getEndpoints(builtin = True, dynamic = True, static = True)
 
@@ -158,7 +164,7 @@ for x in enp:
             "method": name_arr[0].split(" ")[0],
             "header": [],
             "url": {
-                "raw": "{{protocol}}://{{url}}:" + port + "/".join(path_arr),
+                "raw": "{{protocol}}://{{url}}:" + port + EXTRA_ENDPOINT + "/" + "/".join(path_arr),
                 "protocol": "{{protocol}}",
                 "host": [
                     "{{url}}"
