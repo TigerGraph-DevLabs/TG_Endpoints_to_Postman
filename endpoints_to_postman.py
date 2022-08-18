@@ -157,6 +157,9 @@ for x in enp:
 					"type": "noauth"
 				}
 
+    if not port == "{{port_gui}}":
+        path_arr = ['restpp'] + path_arr
+
     it = {
         "name": "/".join(name_arr),
         "request": {
