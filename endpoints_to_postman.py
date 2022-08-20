@@ -4,7 +4,7 @@ import json
 
 ### Header
 ma = {
-    "name": cred.GRAPHNAME,
+    "name": cred.OUTPUT_FILE,
     "description": cred.GRAPHNAME,
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 }
@@ -12,6 +12,8 @@ ma = {
 gui_port = ["/api/ping", "/ts3/api/datapoints", "/informant/current-service-status", "/gsqlserver/gsql/schema", "/gsqlserver/gsql/queryinfo", "/gsqlserver/interpreted_query"]
 
 ### Create TG Connection
+if cred.URL[:8] != "https://":
+    cred.URL = "https://" + cred.URL
 conn = tg.TigerGraphConnection(host=cred.URL, username=cred.USERNAME, password=cred.PASSWORD, graphname=cred.GRAPHNAME)
 conn.apiToken = conn.getToken(conn.createSecret())
 
@@ -179,6 +181,9 @@ for x in enp:
         },
         "response": []
     }
+
+    if {'key': 'query', 'value': None, 'description': '', 'disabled': True} in query_arr: # Remove extra query parameter
+        query_arr.remove({'key': 'query', 'value': None, 'description': '', 'disabled': True})
     
     if len(var_arr) > 0:
         it["request"]["url"]["variable"] = var_arr
@@ -594,7 +599,7 @@ hard_coded_endpoints = [
 ### Create a JSON file
 json_object = json.dumps({"info": ma, "item": item + hard_coded_endpoints}, indent=4)
 
-with open(cred.OUTPUT_FILE, "w") as outfile:
+with open(f"{cred.OUTPUT_FILE}.postman_collection.json", "w") as outfile:
     outfile.write(json_object)
 
 
@@ -602,8 +607,7 @@ with open(cred.OUTPUT_FILE, "w") as outfile:
 url = cred.URL.split("//")[-1]
 if url[-1] == "/": url = url[:-1]
 env = {
-	"id": "822ef2bb-8d43-4227-a8ba-9ac98f88d6ed",
-	"name": f"tg_env_{cred.GRAPHNAME}",
+	"name": cred.ENVIRONMENT_FILE,
 	"values": [
 		{
 			"key": "url",
@@ -640,5 +644,5 @@ env = {
 }
 
 ### Write the environment file
-with open(f"tg_env_{cred.GRAPHNAME}.json", "w") as outfile:
+with open(f"{cred.ENVIRONMENT_FILE}.postman_environment.json", "w") as outfile:
     outfile.write(json.dumps(env, indent=4))
