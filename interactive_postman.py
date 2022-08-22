@@ -18,6 +18,9 @@ password = console.input("Enter your password: ", password=True)
 endpt_file = console.input("Endpoint file name: ")
 env_file = console.input("Environment file name: ")
 
+if url[:8] != "https://":
+    url = "https://" + url
+
 console.print("\nGenerating the files...", "\n", style="rgb(255,215,0)")
 
 cred = {
@@ -31,7 +34,7 @@ cred = {
 
 ### Header
 ma = {
-    "name": cred["GRAPHNAME"],
+    "name": cred["OUTPUT_FILE"],
     "description": cred["GRAPHNAME"],
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 }
@@ -208,6 +211,9 @@ for x in track(enp, description="Generating Endpoints..."):
         },
         "response": []
     }
+
+    if {'key': 'query', 'value': None, 'description': '', 'disabled': True} in query_arr: # Remove extra query parameter
+        query_arr.remove({'key': 'query', 'value': None, 'description': '', 'disabled': True})
     
     if len(var_arr) > 0:
         it["request"]["url"]["variable"] = var_arr
@@ -623,7 +629,7 @@ hard_coded_endpoints = [
 ### Create a JSON file
 json_object = json.dumps({"info": ma, "item": item + hard_coded_endpoints}, indent=4)
 
-with open(cred["OUTPUT_FILE"], "w") as outfile:
+with open(cred["OUTPUT_FILE"] + ".postman_collection.json", "w") as outfile:
     outfile.write(json_object)
 
 
@@ -631,8 +637,7 @@ with open(cred["OUTPUT_FILE"], "w") as outfile:
 url = cred["URL"].split("//")[-1]
 if url[-1] == "/": url = url[:-1]
 env = {
-	"id": "822ef2bb-8d43-4227-a8ba-9ac98f88d6ed",
-	"name": f"tg_env_{cred['GRAPHNAME']}",
+	"name": cred["ENV_FILE"],
 	"values": [
 		{
 			"key": "url",
@@ -669,7 +674,7 @@ env = {
 }
 
 ### Write the environment file
-with open(cred["ENV_FILE"], "w") as outfile:
+with open(cred["ENV_FILE"] + ".postman_environment.json", "w") as outfile:
     outfile.write(json.dumps(env, indent=4))
 
 console.print(f"\nSuccessfully created {cred['OUTPUT_FILE']} and {cred['ENV_FILE']}!", style="rgb(255,215,0)")
