@@ -308,131 +308,6 @@ hard_coded_endpoints = [
 			"response": []
 		},
 		{
-			"name": "POST /graph",
-			"request": {
-				"auth": {
-					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "{{token}}",
-							"type": "string"
-						}
-					]
-				},
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{protocol}}://{{url}}:{{port}}/graph/:graph_name",
-					"protocol": "{{protocol}}",
-					"host": [
-						"{{url}}"
-					],
-					"port": "{{port}}",
-					"path": [
-						"graph",
-						":graph_name"
-					],
-					"query": [
-						{
-							"key": "new_vertex_only",
-							"value": None,
-							"description": "(Optional) If set to true, new vertices will be insterted, but existing vertices will nto be updated.",
-							"disabled": True
-						},
-						{
-							"key": "vertex_must_exist",
-							"value": None,
-							"description": "(Optional) if set to true, skips loading edges if both vertices do not exist.",
-							"disabled": True
-						},
-						{
-							"key": "ack",
-							"value": None,
-							"description": "(Optional) Specifies whether REST++ needs to get acknowledgement from GPEs.\n• If set to \"none\", it doesn't need to get acknowledgement from any GPE.\n• If set to \"all\" (default), it needs to get acknowledgement from all GPEs.",
-							"disabled": True
-						}
-					],
-					"variable": [
-						{
-							"description": "(Optional) The name of the graph (REQUIRED in case of multiple graph in the database).",
-							"key": "graph_name",
-							"value": "{{graph_name}}"
-						}
-					]
-				},
-				"description": "This endpoint can upsert vertices and/or edges into the graph called `graph_name`.\n\nDue to the cost of checking for the existence of an edge or a vertex, the standard API does not support separate update and create (insert) operations. Instead, an upsert operation, a combination of update and insert, is provided.\n* If the target vertex or edge already exists, it is updated with the values specified in the request.\n* If the vertex or edge does not yet exist, the action depends on the operator chosen by the user. Some operators will direct the endpoint to create a new vertex or edge using the attribute values in the request.\nThe response is the number of vertices and edges that were accepted. The API uses JSON format to describe the vertices and edges to be upserted. The JSON code can be stored in a text file or specified directly in a command line. There is a maximum size for a POST data payload. See documentation for format of JSON code and limitation.\n\nhttps://docs.tigergraph.com/dev/restpp-api/built-in-endpoints#post-graph-graph_name-upsert-the-given-data"
-			},
-			"response": []
-		},
-		{
-			"name": "GET /query",
-			"protocolProfileBehavior": {
-				"disableBodyPruning": True
-			},
-			"request": {
-				"auth": {
-					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "{{token}}",
-							"type": "string"
-						}
-					]
-				},
-				"method": "GET",
-				"header": [],
-				"body": {
-					"mode": "urlencoded",
-					"urlencoded": []
-				},
-				"url": {
-					"raw": "{{protocol}}://{{url}}:{{port}}/query/:graph_name/:query?<query_parameters>",
-					"protocol": "{{protocol}}",
-					"host": [
-						"{{url}}"
-					],
-					"port": "{{port}}",
-					"path": [
-						"query",
-						":graph_name",
-						":query"
-					],
-					"query": [
-						{
-							"key": "<query_parameters>",
-							"value": None,
-							"description": "All the parameters defined by the installed query."
-						}
-					],
-					"variable": [
-						{
-							"key": "graph_name",
-							"value": "{{graph_name}}",
-							"description": "(Optional) The name of the graph (REQUIRED in case of multiple graph in the database)."
-						},
-						{
-							"key": "query",
-							"value": "",
-							"description": "(REQUIRED) The name of the query to be executed."
-						}
-					]
-				},
-				"description": "Execute a user-defined, installed query.\n\nhttps://docs.tigergraph.com/dev/gsql-ref/querying/query-operations#running-a-query\n\nTo see a list of the parameter names and types for the user-installed GSQL queries, run the following REST++ request (see GET_endpoints): `curl -X GET \"http://localhost:9000/endpoints?dynamic=true\"`"
-			},
-			"response": []
-		},
-		{
 			"name": "POST /gsqlserver/interpreted_query",
 			"request": {
 				"auth": {
@@ -491,19 +366,20 @@ hard_coded_endpoints = [
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "{{protocol}}://{{url}}:{{port}}/requesttoken?secret={{token_secret}}",
+					"raw": "{{protocol}}://{{url}}:{{port}}/restpp/requesttoken?secret={{secret}}",
 					"protocol": "{{protocol}}",
 					"host": [
 						"{{url}}"
 					],
 					"port": "{{port}}",
 					"path": [
+                        "restpp",
 						"requesttoken"
 					],
 					"query": [
 						{
 							"key": "secret",
-							"value": "{{token_secret}}",
+							"value": "{{secret}}",
 							"description": "(REQUIRED) The user's secret."
 						},
 						{
@@ -527,19 +403,20 @@ hard_coded_endpoints = [
 				"method": "PUT",
 				"header": [],
 				"url": {
-					"raw": "{{protocol}}://{{url}}:{{port}}/requesttoken?secret={{token_secret}}&token={{token}}",
+					"raw": "{{protocol}}://{{url}}:{{port}}/restpp/requesttoken?secret={{secret}}&token={{token}}",
 					"protocol": "{{protocol}}",
 					"host": [
 						"{{url}}"
 					],
 					"port": "{{port}}",
 					"path": [
+                        "restpp",
 						"requesttoken"
 					],
 					"query": [
 						{
 							"key": "secret",
-							"value": "{{token_secret}}",
+							"value": "{{secret}}",
 							"description": "(REQUIRED) The user's secret."
 						},
 						{
@@ -568,19 +445,20 @@ hard_coded_endpoints = [
 				"method": "DELETE",
 				"header": [],
 				"url": {
-					"raw": "{{protocol}}://{{url}}:{{port}}/requesttoken?secret={{token_secret}}&token={{token}}",
+					"raw": "{{protocol}}://{{url}}:{{port}}/restpp/requesttoken?secret={{secret}}&token={{token}}",
 					"protocol": "{{protocol}}",
 					"host": [
 						"{{url}}"
 					],
 					"port": "{{port}}",
 					"path": [
+                        "restpp",
 						"requesttoken"
 					],
 					"query": [
 						{
 							"key": "secret",
-							"value": "{{token_secret}}",
+							"value": "{{secret}}",
 							"description": "(REQUIRED) The user's secret."
 						},
 						{
@@ -627,6 +505,16 @@ env = {
 		{
 			"key": "secret",
 			"value": conn.createSecret(),
+			"enabled": True
+		},
+		{
+			"key": "username",
+			"value": cred.USERNAME,
+			"enabled": True
+		},
+		{
+			"key": "password",
+			"value": cred.PASSWORD,
 			"enabled": True
 		},
 		{
